@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>HomeWork 8</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.min.js "></script>
+	<script src="http://jqueryvalidation.org/files/dist/additional-methods.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+	<style type="text/css">
+
+		input.error,select.error { border: 1px solid red;}
+		label.error {color: red;}
+
+			body {
+				background: url("1.jpg") no-repeat fixed;
+				-webkit-background-size: cover;
+				-moz-background-size: cover;
+				-o-background-size: cover;
+				background-size: cover;
+				
+			}
+     
+            .nav-tabs>li>a {
+                background-color:#EEAB58;
+                border: 1px solid #EEAB58;
+                opacity:0.8;
+                color:white;
+            }
+            .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+                color: #666666;
+                background-color: #ffffff;
+                border: 1px solid orange;
+                opacity:0.9;
+            }
+            .carousel-indicators li {
+                background: none repeat scroll 0 0 rgba(0, 0, 0, 0.5);
+                border-radius: 50%;
+                box-shadow: 10px 10px 10px 10px rgb(231, 145, 65) inset;
+                cursor: pointer;
+                display: inline-block;
+                height: 10px;
+                opacity: 0.1;
+                text-indent: 0;
+                z-index: 1000;
+                width:10px;
+                border-color: rgb(214,153,79);
+                border-width: 2px;
+            }
+            .carousel-indicators .active {
+                background-color: rgb(231, 145, 65);
+                height: 10px;
+                margin: 2px;
+                width:10px;
+                opacity: 1;
+                z-index: 1000;
+             }            
+            .carousel-caption
+            {
+                position:absolute;right:0;bottom:0;left:0;padding:15px;background:#333;background:rgba(0,0,0,0.4)
+            }
+            .carousel-caption h4,.carousel-caption h5
+            {
+                line-height:20px;color:#fff
+            }
+            .carousel-caption h4{
+                margin:0 0 5px
+            }
+            .carousel-caption h5{
+                margin-bottom:0px;
+            }
+	
+        
+
+        </style>
+
+
+
+	
+</head>
+<body style="margin-left:5%;margin-top:2%;margin-right:5%;">
+
+ <script>
+            window.fbAsyncInit = function() {
+                FB.init({
+                    appId      : '369479833220554',
+                    xfbml      : true,
+                    version    : 'v2.2'
+                });
+            };
+
+            (function(d, s, id){
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) {return;}
+                    js = d.createElement(s); js.id = id;
+                    js.src = "//connect.facebook.net/en_US/sdk.js";
+                    fjs.parentNode.insertBefore(js, fjs);
+                    }(document, 'script', 'facebook-jssdk'));
+
+            var link1,picture1,description1,name1;
+
+            var name;
+            var description;
+           	var link;
+           	var picture;
+
+            function sharebutton()
+            {
+
+                FB.ui({
+                    method: 'feed',
+                    link: link,
+                    picture: picture,
+                    caption: 'Property Information from Zillow.com',
+                    description: description,
+                    name: name,
+                }, function(response) {
+
+                    if (response) {
+                        if (!response.error_code) {
+                            alert("Posted Successfully");
+                        }
+                        else
+                        {
+                            alert("Sorry!!Unable to post");
+                        }
+                    }
+                });
+            }
+
+            
+
+            var jsonob="";
+			$(document).ready(function(){	
+
+				$("#output").hide();
+				$("#errors").hide();
+
+
+
+					$("#myform").validate({
+						rules: {
+							address: "required",
+							city: "required",
+							state: "required"
+						},
+						submitHandler: function(){
+							var address = $("#address").val();
+							var city = $("#city").val();
+							var state = $("#state").val();
+
+							$("#output").hide();
+							$("#errors").hide();
+							
+
+			    			$.ajax({
+			    				type: "GET",
+			    				url:"http://default-environment-pyhy7xamf3.elasticbeanstalk.com/index.php",
+			    				datatype:'json',
+			    				crossDomain:true,
+			    				data: {address:address,city:city,state:state},
+								success:function(jsresults,status,xhr){
+
+
+
+									if(!($.isEmptyObject(jsresults))){
+
+										jsonob = JSON.parse(jsresults);
+									
+										$("#errors").hide();
+										$("#output").show(100);
+										
+
+
+							            $("#homedetails").text(jsonob.result.street+", "+jsonob.result.city+", "+jsonob.result.state+"-"+jsonob.result.zipcode);  	  
+										$("#homedetails").attr('href',jsonob.result.homedetails);	  
+							            $("#useCode").text(jsonob.result.useCode);
+										$("#lastSoldPrice").text("$"+jsonob.result.lastSoldPrice);                                              
+							            $("#yearBuilt").text(jsonob.result.yearBuilt); 
+							            if(jsonob.result.lastSoldDate === "01-Jan-1970"){
+							                $("#lastSoldDate").text("");
+							            }
+							            else {
+							                $("#lastSoldDate").text(jsonob.result.lastSoldDate);
+							            }                                                                                              
+							            $("#lotSizeSqFt").text(jsonob.result.lotSizeSqFt+" sq. ft."); 
+										if(jsonob.result.estimateLastUpdate === "01-Jan-1970"){
+							                $("#estimateLastUpdate").text("");
+							            }
+							            else {
+							                $("#estimateLastUpdate").text(jsonob.result.estimateLastUpdate);
+							      	    }
+										$("#estimateAmount").text("$"+jsonob.result.estimateAmount);
+							            $("#finishedSqFt").text(jsonob.result.finishedSqFt+" sq. ft.");
+										if(jsonob.result.estimateValueChangeSign==='+'){
+							                $("#overallChange").attr('src',jsonob.result.imgp); 
+							            } 
+							            else {
+							                $("#overallChange").attr('src',jsonob.result.imgn);
+							            }
+										$("#estimateValueChange").text("$"+jsonob.result.estimateValueChange);												  
+										$("#bathrooms").text(jsonob.result.bathrooms);
+										$("#estimateValuationRange").text("$"+jsonob.result.estimateValuationRangeLow+" - "+"$"+jsonob.result.estimateValuationRangeHigh);
+							            $("#bedrooms").text(jsonob.result.bedrooms);
+							            if(jsonob.result.restimateLastUpdate === "01-Jan-1970"){
+							                $("#restimateLastUpdate").text("");
+							            }
+							            else {
+							                $("#restimateLastUpdate").text(jsonob.result.restimateLastUpdate);
+							      	    }
+							            $("#restimateAmount").text("$"+jsonob.result.restimateAmount);
+									    $("#taxAssessmentYear").text(jsonob.result.taxAssessmentYear);
+										if(jsonob.result.restimateValueChangeSign==='+'){
+							                  $("#rentChange").attr('src',jsonob.result.imgp); 
+							            } 
+							            else {
+							                  $("#rentChange").attr('src',jsonob.result.imgn);
+							            }
+							            $("#restimateValueChange").text("$"+jsonob.result.restimateValueChange);
+							            $("#taxAssessment").text("$"+jsonob.result.taxAssessment);
+							            $("#restimateValuationRange").text("$"+jsonob.result.restimateValuationRangeLow+" - "+"$"+jsonob.result.restimateValuationRangeHigh);
+				              
+
+							              // Carousel slides data
+
+							            $("#year1").attr('src',jsonob.chart.year1);
+							            $("#years5").attr('src',jsonob.chart.years5);
+							            $("#years10").attr('src',jsonob.chart.years10);
+
+
+
+
+
+
+						              	$("#slide1").text(jsonob.result.street+", "+jsonob.result.city+", "+jsonob.result.state+"-"+jsonob.result.zipcode);                                                
+						              	$("#slide2").text(jsonob.result.street+", "+jsonob.result.city+", "+jsonob.result.state+"-"+jsonob.result.zipcode);
+						              	$("#slide3").text(jsonob.result.street+", "+jsonob.result.city+", "+jsonob.result.state+"-"+jsonob.result.zipcode);  
+				              
+
+
+
+				                       	
+
+				  				      	name=jsonob.result.street+", "+jsonob.result.city+", "+jsonob.result.state+"-"+jsonob.result.zipcode;  
+				  				      	description="Last Sold Price:$"+jsonob.result.lastSoldPrice+",30 Days Overall Change:"+jsonob.result.estimateValueChangeSign+"$"+jsonob.result.estimateValueChange;
+				  				      	link=jsonob.result.homedetails;
+				  				      	picture=jsonob.chart.year1;
+				  				    }
+									if($.isEmptyObject(jsresults)){
+				  				    	$("#output").hide();
+										$("#errors").show(1000);
+				  				    }
+				  				    
+								},error : function(){
+									alert (hi);
+								}
+			    			});	
+					}
+					});
+				});	
+
+
+		</script>
+
+
+
+
+
+
+	<div class="container">
+	<div class="row">
+		<h4 style="color:ORANGE;">Search Your Property Here</h4>
+	</div>
+
+	<div class="row">
+		<form id="myform" method="post" role="form" class="form-horizontal form1">
+		<div class="form-group">
+		<div class="col-lg-2">
+			<label for="address" style="color:ORANGE;">Street Address*:</label>
+		</div>
+
+		<div class="col-lg-2">
+			<input type="text" class="form-control" id="address" placeholder="Address" name="address">
+		</div>
+
+		<div class="col-lg-1">
+			<label for="city" style="color:ORANGE;">City*:</label>
+		</div>
+
+		<div class="col-lg-2">
+			<input type="text" class="form-control" id="city" name="city" placeholder="City">
+		</div>
+
+		<div class="col-lg-1">
+			<label for="state" style="color:ORANGE;">State*:</label>
+		</div>
+
+		<div class="col-lg-1">
+			<select id="state" class="form-control" name="state">
+				<option value=""></option>
+				<option value="AL">AL</option>
+				<option value="AK">AK</option>
+				<option value="AZ">AZ</option>
+				<option value="AR">AR</option>
+				<option value="CA">CA</option>
+				<option value="CO">CO</option>
+				<option value="CT">CT</option>
+				<option value="DE">DE</option>
+				<option value="DC">DC</option>
+				<option value="FL">FL</option>
+				<option value="GA">GA</option>
+				<option value="HI">HI</option>
+				<option value="ID">ID</option>
+				<option value="IL">IL</option>
+				<option value="IN">IN</option>
+				<option value="IA">IA</option>
+				<option value="KS">KS</option>
+				<option value="KY">KY</option>
+				<option value="LA">LA</option>
+				<option value="ME">ME</option>
+				<option value="MD">MD</option>
+				<option value="MA">MA</option>
+				<option value="MI">MI</option>
+				<option value="MN">MN</option>
+				<option value="MS">MS</option>
+				<option value="MO">MO</option>
+				<option value="MT">MT</option>
+				<option value="NE">NE</option>
+				<option value="NV">NV</option>
+				<option value="NH">NH</option>
+				<option value="NJ">NJ</option>
+				<option value="NM">NM</option>
+				<option value="NY">NY</option>
+				<option value="NC">NC</option>
+				<option value="ND">ND</option>
+				<option value="OH">OH</option>
+				<option value="OK">OK</option>
+				<option value="OR">OR</option>
+				<option value="PA">PA</option>
+				<option value="RI">RI</option>
+				<option value="SC">SC</option>
+				<option value="SD">SD</option>
+				<option value="TN">TN</option>
+				<option value="TX">TX</option>
+				<option value="UT">UT</option>
+				<option value="VT">VT</option>
+				<option value="VA">VA</option>
+				<option value="WA">WA</option>
+				<option value="WV">WV</option>
+				<option value="WI">WI</option>
+				<option value="WY">WY</option>
+			</select>
+		</div>
+
+		<div class="col-lg-1">
+			<input id="submit" class="btn btn-warning" type="submit" value="submit">
+		</div>
+
+		
+		<div class="col-lg-2">
+			<a href="http://www.zillow.com"><img class="img-responsive pull-right" src="http://www.zillow.com/widgets/GetVersionedResource.htm?path=/static/logos/Zillowlogo_150x40.gif" style="border-radius:0.3em;" width="100" height="50" alt="Zillow Real Estate Search" /></a>
+		</div></div>
+		</form>
+	</div>
+	
+
+	
+
+
+</div>
+
+<br><br><br>
+<hr style="color:white" />
+
+
+
+
+<div class="container">
+
+<div class="row" id="errors">
+    <h3 align="center" style="color:red;">No exact match found--Verify that the given address is correct</h3>
+    
+</div>
+
+
+<div id="output">
+	<ul class="nav nav-tabs" role="tablist">
+		<li class="active"><a href="#bstable" role="tab" data-toggle="tab">Basic Info</a></li>
+		<li><a href="#hzgraph" role="tab" data-toggle="tab">Historical Zestimates</a></li>
+	</ul>
+
+	<div class="tab-content">
+		<div class="tab-pane fade in active table-responsive" id="bstable" style="border: 0.5px solid orange;background-color:white;">
+			<table class="table table-striped table-hover table-responsive" style="background-color:white;overflow-y:scroll;white-space:nowrap;">
+				<tr>
+					<td colspan="3">See more details for <a id="homedetails" href=""></a> on zillow</td>
+					<td align="right"><button class="btn btn-primary" id="sharebutton" onclick="sharebutton()">Share on <b>Facebook</b></button></td>
+				</tr>
+
+
+
+				<tr>
+					<td>Property Type:</td>
+					<td align="right" id="useCode"></td>
+					<td>Last Sold Price:</td>
+					<td align="right" id="lastSoldPrice"></td>
+				</tr>
+
+				<tr>
+					<td>Year Built:</td>
+					<td align="right" id="yearBuilt"></td>
+					<td>Last Sold Date:</td>
+					<td align="right" id="lastSoldDate"></td>
+				</tr>
+
+				<tr>
+					<td>Lot Size:</td>
+					<td align="right" id="lotSizeSqFt"></td>
+					<td>Zestimate &reg; Property Estimate as of <span id="estimateLastUpdate"></span></td>
+					<td align="right" id="estimateAmount"></td>
+				</tr>
+
+				<tr>
+					<td>Finished Area:</td>
+					<td align="right" id="finishedSqFt"></td>
+					<td>30 Days Overall Change</td>
+					<td align="right"><img id="overallChange" src="" alt="&nbsp;" />&nbsp;<span id="estimateValueChange"></span></td>
+				</tr>
+
+				<tr>
+					<td>Bathrooms:</td>
+					<td align="right" id="bathrooms"></td>
+					<td>All time Property Range:</td>
+					<td align="right" id="estimateValuationRange"></td>
+				</tr>
+
+				<tr>
+					<td>Bedrooms:</td>
+					<td align="right" id="bedrooms"></td>
+					<td>Rent Zestimate &reg; Valuation as of <span id="restimateLastUpdate"></span></td>
+					<td align="right" id="restimateAmount"></td>
+				</tr>
+
+				<tr>
+					<td>Tax Assessment Year:</td>
+					<td align="right" id="taxAssessmentYear"></td>
+					<td>30 Days Rent Change</td>
+					<td align="right"><img id="rentChange" src="" alt="&nbsp;" />&nbsp;<span id="restimateValueChange"></td>
+				</tr>
+
+				<tr>
+					<td>Tax Assessment:</td>
+					<td align="right" id="taxAssessment"></td>
+					<td>All time Rent Range:</td>
+					<td align="right" id="restimateValuationRange"></td>
+				</tr>
+			</table>
+		</div>
+
+
+		<div class="tab-pane fade" id="hzgraph">
+			<div id="charts" class="carousel slide" data-ride="carousel">
+				<ol class="carousel-indicators">
+					<li data-target="#charts" data-slide-to="0" class="active"></li>
+					<li data-target="#charts" data-slide-to="1"></li>
+					<li data-target="#charts" data-slide-to="2"></li>
+				</ol>
+
+
+				<div class="carousel-inner">
+					<div class="item active">
+						<img class="img-responsive center-block" id="year1" src="">
+						<div class="carousel-caption">
+							<h4 style="float:left">Historical Zestimate for the past 1 year</h4><br>
+							<h5><span id="slide1" style="float:left"></span></h5>
+						</div>
+					</div>
+
+					<div class="item">
+						<img class="img-responsive center-block" id="years5" src="">
+						<div class="carousel-caption">
+							<h4 style="float:left">Historical Zestimate for the past 5 years</h4><br>
+							<h5><span id="slide2" style="float:left"></span></h5>
+						</div>
+					</div>
+
+					<div class="item">
+						<img class="img-responsive center-block" id="years10" src="">
+						<div class="carousel-caption">
+							<h4 style="float:left">Historical Zestimate for the past 10 years</h4><br>
+							<h5><span id="slide3" style="float:left"></span></h5>
+						</div>
+					</div>
+				</div>
+
+
+				<a class="left carousel-control" href="#charts" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+				<a class="right carousel-control" href="#charts" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<br>
+
+
+<center><div id="footer" style="color:white;">&copy; Zillow; Inc., 2006-2014,Use is subject to <a href="http://www.zillow.com/corp/Terms.htm " style="color:orange;">Terms of use.</a><br><a href="http://www.zillow.com/zestimate/" style="color:orange;">What's a Zestimate?</a> </div></center>
+<NOSCRIPT>
+</body>
+</html>
